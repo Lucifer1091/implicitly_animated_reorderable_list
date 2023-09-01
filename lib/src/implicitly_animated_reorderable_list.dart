@@ -551,6 +551,8 @@ class ImplicitlyAnimatedReorderableListState<E extends Object>
   void avoidConflictingMoves(_Item? target) {
     _itemTranslations.forEach((key, controller) {
       final item = _itemBoxes[key];
+      if (item?.index == null) return;
+      if (target?.index == null) return;
 
       if (item != dragItem && item != target) {
         if (item!.index! < target!.index!) {

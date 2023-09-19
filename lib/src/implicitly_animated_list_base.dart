@@ -9,27 +9,27 @@ import 'package:meta/meta.dart';
 
 import 'src.dart';
 
-typedef AnimatedItemBuilder<W extends Widget, T> = W Function(
-    BuildContext context, Animation<double> animation, T item, int i);
+typedef AnimatedItemBuilder<W extends Widget, E> = W Function(
+    BuildContext context, Animation<double> animation, E item, int i);
 
-typedef RemovedItemBuilder<W extends Widget, T> = W Function(
-    BuildContext context, Animation<double> animation, T item);
+typedef RemovedItemBuilder<W extends Widget, E> = W Function(
+    BuildContext context, Animation<double> animation, E item);
 
-typedef UpdatedItemBuilder<W extends Widget, T> = W Function(
-    BuildContext context, Animation<double> animation, T item);
+typedef UpdatedItemBuilder<W extends Widget, E> = W Function(
+    BuildContext context, Animation<double> animation, E item);
 
-abstract class ImplicitlyAnimatedListBase<W extends Widget, T extends Object>
+abstract class ImplicitlyAnimatedListBase<W extends Widget, E extends Object>
     extends StatefulWidget {
   /// Called, as needed, to build list item widgets.
   ///
   /// List items are only built when they're scrolled into view.
-  final AnimatedItemBuilder<W, T> itemBuilder;
+  final AnimatedItemBuilder<W, E> itemBuilder;
 
   /// An optional builder when an item was removed from the list.
   ///
   /// If not specified, the [ImplicitlyAnimatedList] uses the [itemBuilder] with
   /// the animation reversed.
-  final RemovedItemBuilder<W, T>? removeItemBuilder;
+  final RemovedItemBuilder<W, E>? removeItemBuilder;
 
   /// An optional builder when an item in the list was changed but not its position.
   ///
@@ -39,14 +39,14 @@ abstract class ImplicitlyAnimatedListBase<W extends Widget, T extends Object>
   /// the new item.
   ///
   /// If not specified, changes will appear instantaneously.
-  final UpdatedItemBuilder<W, T>? updateItemBuilder;
+  final UpdatedItemBuilder<W, E>? updateItemBuilder;
 
   /// The data that this [ImplicitlyAnimatedList] should represent.
-  final List<T> items;
+  final List<E> items;
 
   /// Called by the DiffUtil to decide whether two object represent the same Item.
   /// For example, if your items have unique ids, this method should check their id equality.
-  final ItemDiffUtil<T> areItemsTheSame;
+  final ItemDiffUtil<E> areItemsTheSame;
 
   /// The duration of the animation when an item was inserted into the list.
   final Duration insertDuration;
@@ -78,8 +78,8 @@ abstract class ImplicitlyAnimatedListBase<W extends Widget, T extends Object>
 }
 
 abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
-        B extends ImplicitlyAnimatedListBase<W, T>, T extends Object>
-    extends State<B> with DiffCallback<T>, TickerProviderStateMixin {
+        B extends ImplicitlyAnimatedListBase<W, E>, E extends Object>
+    extends State<B> with DiffCallback<E>, TickerProviderStateMixin {
   @protected
   GlobalKey<CustomSliverAnimatedListState> animatedListKey = GlobalKey();
 
@@ -105,39 +105,39 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
   ]).animate(updateAnimController);
 
   // The currently active items.
-  late List<T> _data = List<T>.from(widget.items);
-  List<T> get data => _data;
+  late List<E> _data = List<E>.from(widget.items);
+  List<E> get data => _data;
   // The items that have newly come in that
   // will get diffed into the dataset.
-  late List<T> _newItems = List<T>.from(widget.items);
+  late List<E> _newItems = List<E>.from(widget.items);
   // The previous dataSet.
-  late List<T> _oldItems = List<T>.from(data);
+  late List<E> _oldItems = List<E>.from(data);
   //
   Completer<int>? _mutex;
 
   @nonVirtual
   @override
-  List<T> get newList => _newItems;
+  List<E> get newList => _newItems;
 
   @nonVirtual
   @override
-  List<T> get oldList => _oldItems;
+  List<E> get oldList => _oldItems;
 
-  final Map<T, T> _changes = {};
-
-  @nonVirtual
-  @protected
-  Map<T, T> get changes => _changes;
+  final Map<E, E> _changes = {};
 
   @nonVirtual
   @protected
-  AnimatedItemBuilder<W, T> get itemBuilder => widget.itemBuilder;
+  Map<E, E> get changes => _changes;
+
   @nonVirtual
   @protected
-  RemovedItemBuilder<W, T>? get removeItemBuilder => widget.removeItemBuilder;
+  AnimatedItemBuilder<W, E> get itemBuilder => widget.itemBuilder;
   @nonVirtual
   @protected
-  UpdatedItemBuilder<W, T>? get updateItemBuilder => widget.updateItemBuilder;
+  RemovedItemBuilder<W, E>? get removeItemBuilder => widget.removeItemBuilder;
+  @nonVirtual
+  @protected
+  UpdatedItemBuilder<W, E>? get updateItemBuilder => widget.updateItemBuilder;
 
   @override
   void initState() {
@@ -158,8 +158,8 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
   Future<void> _updateList() async {
     await _mutex?.future;
 
-    _newItems = List<T>.from(widget.items);
-    _oldItems = List<T>.from(data);
+    _newItems = List<E>.from(widget.items);
+    _oldItems = List<E>.from(data);
 
     _calcDiffs();
   }
@@ -180,7 +180,7 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
 
       await _diffOperation?.cancel();
       _diffOperation = CancelableOperation.fromFuture(
-        MyersDiff.withCallback<T>(this, spawnIsolate: widget.spawnIsolate),
+        MyersDiff.withCallback<E>(this, spawnIsolate: widget.spawnIsolate),
       );
 
       _diffOperation?.then((diffs) {
@@ -191,7 +191,7 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
         }
 
         _delegate.applyDiffs(diffs);
-        _data = List<T>.from(_newItems);
+        _data = List<E>.from(_newItems);
 
         updateAnimController
           ..reset()
@@ -202,25 +202,25 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
     } else {
       // Always update the list with the newest data,
       // even if the lists have the same value equality.
-      _data = List<T>.from(_newItems);
+      _data = List<E>.from(_newItems);
     }
   }
 
   @nonVirtual
   @protected
   @override
-  bool areContentsTheSame(T oldItem, T newItem) => true;
+  bool areContentsTheSame(E oldItem, E newItem) => true;
 
   @nonVirtual
   @protected
   @override
-  bool areItemsTheSame(T oldItem, T newItem) =>
+  bool areItemsTheSame(E oldItem, E newItem) =>
       widget.areItemsTheSame(oldItem, newItem);
 
   @mustCallSuper
   @protected
   @override
-  void onInserted(int index, T item) =>
+  void onInserted(int index, E item) =>
       list.insertItem(index, duration: widget.insertDuration);
 
   @mustCallSuper
@@ -243,7 +243,7 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
   @mustCallSuper
   @protected
   @override
-  void onChanged(int startIndex, List<T> itemsChanged) {
+  void onChanged(int startIndex, List<E> itemsChanged) {
     int i = 0;
     for (final item in itemsChanged) {
       final index = startIndex + i;
@@ -257,7 +257,7 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
   @nonVirtual
   @protected
   Widget buildItem(
-      BuildContext context, Animation<double> animation, T item, int index) {
+      BuildContext context, Animation<double> animation, E item, int index) {
     if (updateItemBuilder != null && changes[item] != null) {
       return buildUpdatedItemWidget(item);
     }
@@ -266,7 +266,7 @@ abstract class ImplicitlyAnimatedListBaseState<W extends Widget,
   }
 
   @protected
-  Widget buildUpdatedItemWidget(T newItem) {
+  Widget buildUpdatedItemWidget(E newItem) {
     final oldItem = _changes[newItem];
 
     return AnimatedBuilder(

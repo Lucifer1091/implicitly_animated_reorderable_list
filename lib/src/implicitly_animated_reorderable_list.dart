@@ -6,15 +6,15 @@ import 'package:implicitly_animated_reorderable_list/src/custom_sliver_animated_
 
 import 'src.dart';
 
-typedef ReorderStartedCallback<T> = void Function(T item, int index);
+typedef ReorderStartedCallback<E> = void Function(E item, int index);
 
-typedef ReorderFinishedCallback<T> = void Function(
-    T item, int from, int to, List<T> newItems);
+typedef ReorderFinishedCallback<E> = void Function(
+    E item, int from, int to, List<E> newItems);
 
 /// A Flutter ListView that implicitly animates between the changes of two lists with
 /// the support to reorder its items.
-class ImplicitlyAnimatedReorderableList<T extends Object>
-    extends ImplicitlyAnimatedListBase<Reorderable, T> {
+class ImplicitlyAnimatedReorderableList<E extends Object>
+    extends ImplicitlyAnimatedListBase<Reorderable, E> {
   /// Whether the scroll view scrolls in the reading direction.
   ///
   /// Defaults to false.
@@ -94,7 +94,7 @@ class ImplicitlyAnimatedReorderableList<T extends Object>
 
   /// Called in response to when an item changed from normal to dragged
   /// state and may be reordered.
-  final ReorderStartedCallback<T>? onReorderStarted;
+  final ReorderStartedCallback<E>? onReorderStarted;
 
   /// Called in response to when the dragged item has been released
   /// and animated to its final destination. Here you should update
@@ -108,7 +108,7 @@ class ImplicitlyAnimatedReorderableList<T extends Object>
   /// the list (i.e. the user canceled the reorder).
   ///
   /// This parameter should not be null.
-  final ReorderFinishedCallback<T> onReorderFinished;
+  final ReorderFinishedCallback<E> onReorderFinished;
 
   /// A non-reorderable widget displayed at the top.
   ///
@@ -149,11 +149,11 @@ class ImplicitlyAnimatedReorderableList<T extends Object>
   /// a new isolate has to be spawned or not for optimal performance.
   const ImplicitlyAnimatedReorderableList({
     Key? key,
-    required List<T> items,
-    required AnimatedItemBuilder<Reorderable, T> itemBuilder,
-    required ItemDiffUtil<T> areItemsTheSame,
-    RemovedItemBuilder<Reorderable, T>? removeItemBuilder,
-    UpdatedItemBuilder<Reorderable, T>? updateItemBuilder,
+    required List<E> items,
+    required AnimatedItemBuilder<Reorderable, E> itemBuilder,
+    required ItemDiffUtil<E> areItemsTheSame,
+    RemovedItemBuilder<Reorderable, E>? removeItemBuilder,
+    UpdatedItemBuilder<Reorderable, E>? updateItemBuilder,
     Duration insertDuration = const Duration(milliseconds: 500),
     Duration removeDuration = const Duration(milliseconds: 500),
     Duration updateDuration = const Duration(milliseconds: 500),
@@ -192,8 +192,8 @@ class ImplicitlyAnimatedReorderableList<T extends Object>
         );
 
   @override
-  ImplicitlyAnimatedReorderableListState<T> createState() =>
-      ImplicitlyAnimatedReorderableListState<T>();
+  ImplicitlyAnimatedReorderableListState<E> createState() =>
+      ImplicitlyAnimatedReorderableListState<E>();
 
   static ImplicitlyAnimatedReorderableListState? of(BuildContext context) {
     return context
@@ -201,9 +201,9 @@ class ImplicitlyAnimatedReorderableList<T extends Object>
   }
 }
 
-class ImplicitlyAnimatedReorderableListState<T extends Object>
+class ImplicitlyAnimatedReorderableListState<E extends Object>
     extends ImplicitlyAnimatedListBaseState<Reorderable,
-        ImplicitlyAnimatedReorderableList<T>, T> {
+        ImplicitlyAnimatedReorderableList<E>, E> {
   // The key of the custom scroll view.
   final GlobalKey _listKey = GlobalKey(debugLabel: 'list_key');
   // The key of the draggedItem.
@@ -280,7 +280,7 @@ class ImplicitlyAnimatedReorderableListState<T extends Object>
   }
 
   @override
-  void didUpdateWidget(ImplicitlyAnimatedReorderableList<T> oldWidget) {
+  void didUpdateWidget(ImplicitlyAnimatedReorderableList<E> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.controller != null && widget.controller != _controller) {
@@ -477,14 +477,14 @@ class ImplicitlyAnimatedReorderableListState<T extends Object>
 
         final toIndex = _itemBoxes[target.key]?.index;
         if (toIndex != null) {
-          final T item = data.removeAt(_dragIndex!);
+          final E item = data.removeAt(_dragIndex!);
           data.insert(toIndex, item);
 
           widget.onReorderFinished(
             item,
             _dragIndex!,
             toIndex,
-            List<T>.from(data),
+            List<E>.from(data),
           );
         }
       }
@@ -785,7 +785,7 @@ class ImplicitlyAnimatedReorderableListState<T extends Object>
   }
 
   @override
-  Widget buildUpdatedItemWidget(T newItem) {
+  Widget buildUpdatedItemWidget(E newItem) {
     assert(updateItemBuilder != null);
 
     // We need to override this method, as AnimatedBuilder is not

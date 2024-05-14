@@ -30,7 +30,8 @@ class HighlightText extends StatefulWidget {
 }
 
 class _HighlightTextState extends State<HighlightText> {
-  TextStyle get style => widget.style ?? Theme.of(context).textTheme.bodyText2!;
+  TextStyle get style =>
+      widget.style ?? Theme.of(context).textTheme.bodyMedium!;
   TextStyle get activeStyle =>
       widget.activeStyle ?? style.copyWith(fontWeight: FontWeight.bold);
 
@@ -66,7 +67,8 @@ List<Triplet<int, int, bool>> getQueryHighlights(String text, String query) {
   final t = text.toLowerCase();
   final q = query.toLowerCase();
 
-  if (t.isEmpty || q.isEmpty || !t.contains(q)) return [Triplet(0, t.length, false)];
+  if (t.isEmpty || q.isEmpty || !t.contains(q))
+    return [Triplet(0, t.length, false)];
 
   List<Triplet<int, int, bool>> idxs = [];
 
@@ -92,12 +94,16 @@ List<Triplet<int, int, bool>> getQueryHighlights(String text, String query) {
         if (idx.first == 0) {
           result.add(idx);
         } else {
-          result..add(Triplet(0, idx.first, false))..add(idx);
+          result
+            ..add(Triplet(0, idx.first, false))
+            ..add(idx);
         }
       } else if (last.second == idx.first) {
         result.add(idx);
       } else {
-        result..add(Triplet(last.second, idx.first, false))..add(idx);
+        result
+          ..add(Triplet(last.second, idx.first, false))
+          ..add(idx);
       }
 
       if (isLast && idx.second != t.length) {
@@ -140,12 +146,15 @@ class Triplet<A, B, C> {
 
   @override
   bool operator ==(Object o) {
-    return o is Triplet && o.first == first && o.second == second && o.third == third;
+    return o is Triplet &&
+        o.first == first &&
+        o.second == second &&
+        o.third == third;
   }
 
   @override
   int get hashCode {
-    return hashList([
+    return Object.hashAll([
       first,
       second,
       third,

@@ -39,7 +39,8 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
     for (final lang in languages) {
       final englishName = lang.englishName.toLowerCase();
       final nativeName = lang.nativeName.toLowerCase();
-      final startsWith = englishName.startsWith(query) || nativeName.startsWith(query);
+      final startsWith =
+          englishName.startsWith(query) || nativeName.startsWith(query);
 
       if (startsWith) {
         filteredLanguages.add(lang);
@@ -49,7 +50,8 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
     for (final lang in languages) {
       final englishName = lang.englishName.toLowerCase();
       final nativeName = lang.nativeName.toLowerCase();
-      final contains = englishName.contains(query) || nativeName.contains(query);
+      final contains =
+          englishName.contains(query) || nativeName.contains(query);
 
       if (contains && !filteredLanguages.contains(lang)) {
         filteredLanguages.add(lang);
@@ -74,10 +76,10 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
         title: HighlightText(
           query: text,
           text: lang.nativeName,
-          style: textTheme.bodyText2?.copyWith(
+          style: textTheme.bodyMedium?.copyWith(
             fontSize: 16,
           ),
-          activeStyle: textTheme.bodyText2?.copyWith(
+          activeStyle: textTheme.bodyMedium?.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.w900,
           ),
@@ -85,10 +87,10 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
         subtitle: HighlightText(
           query: text,
           text: lang.englishName,
-          style: textTheme.bodyText1?.copyWith(
+          style: textTheme.bodyLarge?.copyWith(
             fontSize: 15,
           ),
-          activeStyle: textTheme.bodyText1?.copyWith(
+          activeStyle: textTheme.bodyLarge?.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
@@ -107,8 +109,9 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
       appBar: _buildAppBar(padding, theme, textTheme),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
-        child:
-            filteredLanguages.isNotEmpty ? _buildList() : _buildNoLanguagesPlaceholder(),
+        child: filteredLanguages.isNotEmpty
+            ? _buildList()
+            : _buildNoLanguagesPlaceholder(),
       ),
     );
   }
@@ -135,13 +138,14 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
     );
   }
 
-  PreferredSize _buildAppBar(double padding, ThemeData theme, TextTheme textTheme) {
+  PreferredSize _buildAppBar(
+      double padding, ThemeData theme, TextTheme textTheme) {
     return PreferredSize(
       preferredSize: Size.fromHeight(56 + padding),
       child: Box(
         height: 56 + padding,
         width: double.infinity,
-        color: theme.accentColor,
+        color: theme.primaryColor,
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.2),
         child: Column(
@@ -158,15 +162,16 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
                       autofocus: true,
                       controller: _controller,
                       textInputAction: TextInputAction.search,
-                      style: textTheme.bodyText2?.copyWith(
+                      style: textTheme.bodyMedium?.copyWith(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 16),
                         hintText: 'Search for a language',
-                        hintStyle: textTheme.bodyText2?.copyWith(
+                        hintStyle: textTheme.bodyMedium?.copyWith(
                           color: Colors.grey.shade200,
                           fontSize: 16,
                         ),
@@ -194,10 +199,10 @@ class _LanguageSearchPageState extends State<LanguageSearchPage> {
   }
 
   Widget _buildNoLanguagesPlaceholder() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const <Widget>[
+        children: <Widget>[
           Icon(
             Icons.translate,
             color: Colors.grey,

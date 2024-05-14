@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Implicitly Animated Reorderable List Example',
       theme: ThemeData.light().copyWith(
-        accentColor: Colors.amber.shade800,
+        primaryColor: Colors.amber.shade800,
         dividerTheme: DividerThemeData(
           thickness: 1,
           color: Colors.grey.shade300,
